@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage users{% endblock %}
+
+{% block content %}
+<section class="section page-section admin-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1 class="page-title">
+                <span class="title-icon">👥</span>
+                Admin users
+            </h1>
+            <a href="{{ url_for('admin.user_create') }}" class="btn btn-primary">
+                + Add user
+            </a>
+        </div>
+
+        {% if users %}
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <span class="user-name">
+                                👤 {{ user.username }}
+                                {% if user.id == current_user.id %}
+                                <span class="status-badge status-active">You</span>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>{{ user.created_at.strftime('%m/%d/%Y') }}</td>
+                        <td class="actions-cell">
+                            {% if user.id != current_user.id %}
+                            <form action="{{ url_for('admin.user_delete', user_id=user.id) }}" method="post"
+                                style="display: inline;" onsubmit="return confirm('Delete user {{ user.username }}?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-xs btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">👥</span>
+            <h2>No users</h2>
+        </div>
+        {% endif %}
+
+        <div class="admin-footer">
+            <a href="{{ url_for('admin.dashboard') }}" class="back-link">
+                ← Back to dashboard
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

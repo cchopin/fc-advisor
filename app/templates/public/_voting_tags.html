@@ -1,0 +1,17 @@
+<div class="voting-grid">
+    {% for tag_id, tag in random_tags.items() %}
+    <form action="{{ url_for('public.vote', fc_id=fc.id) }}" method="post" class="vote-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="tag_id" value="{{ tag_id }}">
+
+        <button type="submit" class="vote-btn {% if tag_id in voted_tag_ids %}voted{% endif %}" {% if tag_id in
+            voted_tag_ids %}disabled{% endif %}>
+            <span class="vote-emoji">{{ tag.emoji }}</span>
+            <span class="vote-name">{{ tag.name }}</span>
+            {% if tag_id in voted_tag_ids %}
+            <span class="vote-status">✓ Voted</span>
+            {% endif %}
+        </button>
+    </form>
+    {% endfor %}
+</div>

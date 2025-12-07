@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage FCs{% endblock %}
+
+{% block content %}
+<section class="section page-section admin-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1 class="page-title">
+                <span class="title-icon">🎖️</span>
+                All Fleet Commanders
+            </h1>
+            <a href="{{ url_for('admin.fc_create') }}" class="btn btn-primary">
+                + Add FC
+            </a>
+        </div>
+
+        {% if fcs %}
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Corporation</th>
+                        <th>Alliance</th>
+                        <th>Votes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fc, vote_count in fcs %}
+                    <tr>
+                        <td class="name-cell">
+                            <div class="table-fc">
+                                <div class="table-avatar">
+                                    {% if fc.avatar_url %}
+                                    <img src="{{ fc.avatar_url }}" alt="{{ fc.name }}">
+                                    {% else %}
+                                    <span>{{ fc.name[0].upper() }}</span>
+                                    {% endif %}
+                                </div>
+                                <span>{{ fc.name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ fc.corporation or '-' }}</td>
+                        <td>{{ fc.alliance or '-' }}</td>
+                        <td>{{ vote_count }}</td>
+                        <td class="actions-cell">
+                            <a href="{{ url_for('public.fc_detail', fc_id=fc.id) }}" class="btn btn-xs btn-outline">
+                                View
+                            </a>
+                            <a href="{{ url_for('admin.fc_edit', fc_id=fc.id) }}" class="btn btn-xs btn-primary">
+                                Edit
+                            </a>
+                            <form action="{{ url_for('admin.fc_delete', fc_id=fc.id) }}" method="post"
+                                style="display: inline;" onsubmit="return confirm('Delete {{ fc.name }}?')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-xs btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">🚀</span>
+            <h2>No FC created</h2>
+            <p>Start by adding some Fleet Commanders!</p>
+            <a href="{{ url_for('admin.fc_create') }}" class="btn btn-primary">Add FC</a>
+        </div>
+        {% endif %}
+
+        <div class="admin-footer">
+            <a href="{{ url_for('admin.dashboard') }}" class="back-link">
+                ← Back to dashboard
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

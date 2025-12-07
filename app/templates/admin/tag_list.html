@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Badges{% endblock %}
+
+{% block content %}
+<section class="section page-section admin-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1 class="page-title">
+                <span class="title-icon">🏷️</span>
+                All Badges
+            </h1>
+            <a href="{{ url_for('admin.tag_create') }}" class="btn btn-primary">
+                + Add Badge
+            </a>
+        </div>
+
+        {% if tags %}
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Badge</th>
+                        <th>ID</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags %}
+                    <tr class="{% if not tag.is_active %}inactive-row{% endif %}">
+                        <td class="name-cell">
+                            <span class="tag-preview">
+                                <span class="tag-emoji-large">{{ tag.emoji }}</span>
+                                <span>{{ tag.name }}</span>
+                            </span>
+                        </td>
+                        <td><code>{{ tag.id }}</code></td>
+                        <td>{{ tag.description or '-' }}</td>
+                        <td>
+                            {% if tag.is_active %}
+                            <span class="status-badge status-active">Active</span>
+                            {% else %}
+                            <span class="status-badge status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell">
+                            <a href="{{ url_for('admin.tag_edit', tag_id=tag.id) }}" class="btn btn-xs btn-primary">
+                                Edit
+                            </a>
+                            <form action="{{ url_for('admin.tag_delete', tag_id=tag.id) }}" method="post"
+                                style="display: inline;"
+                                onsubmit="return confirm('Delete {{ tag.name }}? This will not delete existing votes.')">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-xs btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">🏷️</span>
+            <h2>No badges created</h2>
+            <p>Start by adding some fun badges!</p>
+            <a href="{{ url_for('admin.tag_create') }}" class="btn btn-primary">Add Badge</a>
+        </div>
+        {% endif %}
+
+        <div class="admin-footer">
+            <a href="{{ url_for('admin.dashboard') }}" class="back-link">
+                ← Back to dashboard
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

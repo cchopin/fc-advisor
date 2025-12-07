@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if fc %}Edit {{ fc.name }}{% else %}New FC{% endif %}{% endblock %}
+
+{% block content %}
+<section class="section page-section admin-section">
+    <div class="container">
+        <a href="{{ url_for('admin.dashboard') }}" class="back-link">
+            ← Back to dashboard
+        </a>
+
+        <div class="form-container">
+            <div class="form-card">
+                <h1 class="form-title">
+                    {% if fc %}
+                    <span class="title-icon">✏️</span>
+                    Edit {{ fc.name }}
+                    {% else %}
+                    <span class="title-icon">➕</span>
+                    New Fleet Commander
+                    {% endif %}
+                </h1>
+
+                <form method="post" class="fc-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-group">
+                        <label for="name" class="form-label">FC Name *</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="e.g., JohnDoe"
+                            value="{{ fc.name if fc else '' }}" required maxlength="100">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="corporation" class="form-label">Corporation</label>
+                            <input type="text" id="corporation" name="corporation" class="form-input"
+                                placeholder="e.g., Brave Newbies" value="{{ fc.corporation if fc else '' }}"
+                                maxlength="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="alliance" class="form-label">Alliance</label>
+                            <input type="text" id="alliance" name="alliance" class="form-input"
+                                placeholder="e.g., Brave Collective" value="{{ fc.alliance if fc else '' }}"
+                                maxlength="100">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avatar_url" class="form-label">Avatar URL</label>
+                        <input type="url" id="avatar_url" name="avatar_url" class="form-input"
+                            placeholder="https://images.evetech.net/characters/..."
+                            value="{{ fc.avatar_url if fc else '' }}" maxlength="500">
+                        <span class="form-hint">Use Eve API for character portraits</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio" class="form-label">Bio / Fun description</label>
+                        <textarea id="bio" name="bio" class="form-textarea"
+                            placeholder="A fun description of this legendary FC..."
+                            rows="4">{{ fc.bio if fc else '' }}</textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-glow">
+                            {% if fc %}
+                            Save changes
+                            {% else %}
+                            Create FC
+                            {% endif %}
+                        </button>
+
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+
+                {% if fc %}
+                <!-- Delete Section -->
+                <div class="danger-zone">
+                    <h3 class="danger-title">Danger Zone</h3>
+                    <form action="{{ url_for('admin.fc_delete', fc_id=fc.id) }}" method="post" class="delete-form"
+                        onsubmit="return confirm('Are you sure you want to delete {{ fc.name }}? This action cannot be undone.')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger">
+                            🗑️ Delete this FC
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
