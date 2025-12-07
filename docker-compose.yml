@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5050:5000"
+    volumes:
+      - ./data:/app/instance # Persist database
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=fc-advisor-tely-secret-key-2024-production
+    restart: unless-stopped

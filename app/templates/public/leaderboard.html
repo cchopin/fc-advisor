@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+<section class="section page-section leaderboard-section">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">
+                <span class="title-icon">🏆</span>
+                Leaderboard
+            </h1>
+            <p class="page-subtitle">The most celebrated Fleet Commanders</p>
+        </div>
+
+        {% if fcs %}
+        <!-- Top 3 Podium -->
+        {% if fcs|length >= 3 %}
+        <div class="podium">
+            <!-- Second Place -->
+            <div class="podium-place podium-silver">
+                <div class="podium-avatar">
+                    {% set fc2 = fcs[1][0] %}
+                    {% if fc2.avatar_url %}
+                    <img src="{{ fc2.avatar_url }}" alt="{{ fc2.name }}">
+                    {% else %}
+                    <span>{{ fc2.name[0].upper() }}</span>
+                    {% endif %}
+                </div>
+                <div class="podium-rank">🥈</div>
+                <h3 class="podium-name">{{ fc2.name }}</h3>
+                <p class="podium-votes">{{ fcs[1][1] }} votes</p>
+            </div>
+
+            <!-- First Place -->
+            <div class="podium-place podium-gold">
+                <div class="podium-avatar">
+                    {% set fc1 = fcs[0][0] %}
+                    {% if fc1.avatar_url %}
+                    <img src="{{ fc1.avatar_url }}" alt="{{ fc1.name }}">
+                    {% else %}
+                    <span>{{ fc1.name[0].upper() }}</span>
+                    {% endif %}
+                </div>
+                <div class="podium-rank">🥇</div>
+                <h3 class="podium-name">{{ fc1.name }}</h3>
+                <p class="podium-votes">{{ fcs[0][1] }} votes</p>
+            </div>
+
+            <!-- Third Place -->
+            <div class="podium-place podium-bronze">
+                <div class="podium-avatar">
+                    {% set fc3 = fcs[2][0] %}
+                    {% if fc3.avatar_url %}
+                    <img src="{{ fc3.avatar_url }}" alt="{{ fc3.name }}">
+                    {% else %}
+                    <span>{{ fc3.name[0].upper() }}</span>
+                    {% endif %}
+                </div>
+                <div class="podium-rank">🥉</div>
+                <h3 class="podium-name">{{ fc3.name }}</h3>
+                <p class="podium-votes">{{ fcs[2][1] }} votes</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Full Ranking Table -->
+        <div class="leaderboard-table-container">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th class="rank-col">#</th>
+                        <th class="name-col">Fleet Commander</th>
+                        <th class="tags-col">Top Badges</th>
+                        <th class="votes-col">Votes</th>
+                        <th class="action-col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fc, vote_count in fcs %}
+                    <tr class="{% if loop.index <= 3 %}top-three{% endif %}">
+                        <td class="rank-col">
+                            {% if loop.index == 1 %}🥇
+                            {% elif loop.index == 2 %}🥈
+                            {% elif loop.index == 3 %}🥉
+                            {% else %}{{ loop.index }}
+                            {% endif %}
+                        </td>
+                        <td class="name-col">
+                            <div class="leaderboard-fc">
+                                <div class="leaderboard-avatar">
+                                    {% if fc.avatar_url %}
+                                    <img src="{{ fc.avatar_url }}" alt="{{ fc.name }}">
+                                    {% else %}
+                                    <span>{{ fc.name[0].upper() }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="leaderboard-info">
+                                    <span class="leaderboard-name">{{ fc.name }}</span>
+                                    {% if fc.corporation %}
+                                    <span class="leaderboard-corp">{{ fc.corporation }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="tags-col">
+                            {% set tag_counts = fc.get_tag_counts() %}
+                            {% for tag_id, count in tag_counts.items()|sort(attribute='1', reverse=true) %}
+                            {% if loop.index <= 2 %} {% set tag=all_tags.get(tag_id) %} {% if tag %} <span
+                                class="mini-tag" title="{{ tag.name }}">{{ tag.emoji }}</span>
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                        </td>
+                        <td class="votes-col">{{ vote_count }}</td>
+                        <td class="action-col">
+                            <a href="{{ url_for('public.fc_detail', fc_id=fc.id) }}" class="btn btn-xs btn-outline">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Tags Section -->
+        {% if top_tags %}
+        <div class="top-tags-section">
+            <h2 class="section-subtitle">
+                <span class="title-icon">🔥</span>
+                Most Given Badges
+            </h2>
+
+            <div class="top-tags-grid">
+                {% for tag_id, count in top_tags %}
+                {% set tag = all_tags.get(tag_id) %}
+                {% if tag %}
+                <div class="top-tag-card">
+                    <span class="top-tag-emoji">{{ tag.emoji }}</span>
+                    <span class="top-tag-name">{{ tag.name }}</span>
+                    <span class="top-tag-count">{{ count }}×</span>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <span class="empty-icon">🏆</span>
+            <h2>No votes yet</h2>
+            <p>Be the first to vote!</p>
+            <a href="{{ url_for('public.fc_list') }}" class="btn btn-primary">View FCs</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-bg">
+        <div class="stars"></div>
+        <div class="grid-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <h1 class="hero-title">
+            <span class="hero-emoji">🏆</span>
+            FC-Advisor
+        </h1>
+        <p class="hero-subtitle">
+            Celebrate your favorite Fleet Commanders!
+        </p>
+        <p class="hero-tagline">
+            Give fun badges to your Eve Online FCs.<br>
+            It's <span class="highlight">100% friendly</span> and <span class="highlight">100% fun</span>.
+        </p>
+        <div class="hero-actions">
+            <a href="{{ url_for('public.fc_list') }}" class="btn btn-primary btn-glow">
+                View FCs
+            </a>
+            <a href="{{ url_for('public.leaderboard') }}" class="btn btn-secondary">
+                Leaderboard
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured FCs Section -->
+{% if top_fcs %}
+<section class="section featured-section">
+    <div class="container">
+        <h2 class="section-title">
+            <span class="title-icon">⭐</span>
+            Top Fleet Commanders
+        </h2>
+
+        <div class="fc-grid">
+            {% for fc, vote_count in top_fcs %}
+            <article class="fc-card">
+                <div class="fc-card-header">
+                    <div class="fc-avatar">
+                        {% if fc.avatar_url %}
+                        <img src="{{ fc.avatar_url }}" alt="{{ fc.name }}">
+                        {% else %}
+                        <span class="fc-avatar-placeholder">{{ fc.name[0].upper() }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="fc-info">
+                        <h3 class="fc-name">{{ fc.name }}</h3>
+                        {% if fc.corporation %}
+                        <p class="fc-corp">{{ fc.corporation }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="fc-card-body">
+                    {% set tag_counts = fc.get_tag_counts() %}
+                    {% if tag_counts %}
+                    <div class="fc-tags">
+                        {% for tag_id, count in tag_counts.items()|sort(attribute='1', reverse=true) %}
+                        {% if loop.index <= 3 %} {% set tag=all_tags.get(tag_id) %} {% if tag %} <span
+                            class="tag-badge">
+                            <span class="tag-emoji">{{ tag.emoji }}</span>
+                            <span class="tag-name">{{ tag.name }}</span>
+                            <span class="tag-count">{{ count }}</span>
+                            </span>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="fc-no-tags">No votes yet</p>
+                    {% endif %}
+                </div>
+
+                <div class="fc-card-footer">
+                    <span class="fc-vote-count">
+                        🗳️ {{ vote_count }} vote{{ 's' if vote_count != 1 else '' }}
+                    </span>
+                    <a href="{{ url_for('public.fc_detail', fc_id=fc.id) }}" class="btn btn-sm btn-outline">
+                        Vote
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="section-footer">
+            <a href="{{ url_for('public.fc_list') }}" class="btn btn-primary">
+                View all FCs →
+            </a>
+        </div>
+    </div>
+</section>
+{% else %}
+<section class="section empty-section">
+    <div class="container">
+        <div class="empty-state">
+            <span class="empty-icon">🚀</span>
+            <h2>No FCs yet</h2>
+            <p>Fleet Commanders coming soon!</p>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- How it Works -->
+<section class="section how-section">
+    <div class="container">
+        <h2 class="section-title">
+            <span class="title-icon">🎮</span>
+            How does it work?
+        </h2>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">👀</div>
+                <h3>Pick an FC</h3>
+                <p>Browse the list of Fleet Commanders</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-icon">🏷️</div>
+                <h3>Give a badge</h3>
+                <p>4 random badges are shown to choose from</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-icon">🎉</div>
+                <h3>Celebrate!</h3>
+                <p>Your vote counts in the leaderboard</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tags Preview -->
+<section class="section tags-section">
+    <div class="container">
+        <h2 class="section-title">
+            <span class="title-icon">🏷️</span>
+            Our Fun Badges
+        </h2>
+
+        <div class="tags-showcase">
+            {% for tag_id, tag in all_tags.items() %}
+            <div class="showcase-tag">
+                <span class="tag-emoji">{{ tag.emoji }}</span>
+                <span class="tag-name">{{ tag.name }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

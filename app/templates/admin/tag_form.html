@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if tag %}Edit {{ tag.name }}{% else %}New Badge{% endif %}{% endblock %}
+
+{% block content %}
+<section class="section page-section admin-section">
+    <div class="container">
+        <a href="{{ url_for('admin.tag_list') }}" class="back-link">
+            ← Back to badges
+        </a>
+
+        <div class="form-container">
+            <div class="form-card">
+                <h1 class="form-title">
+                    {% if tag %}
+                    <span class="title-icon">✏️</span>
+                    Edit {{ tag.emoji }} {{ tag.name }}
+                    {% else %}
+                    <span class="title-icon">➕</span>
+                    New Badge
+                    {% endif %}
+                </h1>
+
+                <form method="post" class="tag-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    {% if not tag %}
+                    <div class="form-group">
+                        <label for="id" class="form-label">Badge ID *</label>
+                        <input type="text" id="id" name="id" class="form-input" placeholder="e.g., content_generator"
+                            required maxlength="50" pattern="[a-z0-9_]+">
+                        <span class="form-hint">Lowercase letters, numbers, underscores only</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="emoji" class="form-label">Emoji *</label>
+                            <input type="text" id="emoji" name="emoji" class="form-input emoji-input" placeholder="🎬"
+                                value="{{ tag.emoji if tag else '' }}" required maxlength="10">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name" class="form-label">Display Name *</label>
+                            <input type="text" id="name" name="name" class="form-input"
+                                placeholder="e.g., Content Generator" value="{{ tag.name if tag else '' }}" required
+                                maxlength="100">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" id="description" name="description" class="form-input"
+                            placeholder="e.g., Always brings the content" value="{{ tag.description if tag else '' }}"
+                            maxlength="200">
+                    </div>
+
+                    {% if tag %}
+                    <div class="form-group">
+                        <label class="form-checkbox">
+                            <input type="checkbox" name="is_active" {% if tag.is_active %}checked{% endif %}>
+                            <span>Active (visible in voting)</span>
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-glow">
+                            {% if tag %}
+                            Save changes
+                            {% else %}
+                            Create Badge
+                            {% endif %}
+                        </button>
+
+                        <a href="{{ url_for('admin.tag_list') }}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

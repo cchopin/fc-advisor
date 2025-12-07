@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<section class="section page-section admin-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1 class="page-title">
+                <span class="title-icon">⚙️</span>
+                Admin Dashboard
+            </h1>
+            <div class="header-actions">
+                <a href="{{ url_for('admin.user_list') }}" class="btn btn-secondary">
+                    👥 Users
+                </a>
+                <a href="{{ url_for('admin.tag_list') }}" class="btn btn-secondary">
+                    🏷️ Badges
+                </a>
+                <a href="{{ url_for('admin.fc_create') }}" class="btn btn-primary">
+                    + Add FC
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">🎖️</span>
+                <div class="stat-content">
+                    <span class="stat-value">{{ total_fcs }}</span>
+                    <span class="stat-label">Fleet Commanders</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">🗳️</span>
+                <div class="stat-content">
+                    <span class="stat-value">{{ total_votes }}</span>
+                    <span class="stat-label">Total votes</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="admin-columns">
+            <!-- Recent FCs -->
+            <div class="admin-panel">
+                <h2 class="panel-title">
+                    <span class="title-icon">🆕</span>
+                    Recent FCs
+                </h2>
+
+                {% if recent_fcs %}
+                <ul class="admin-list">
+                    {% for fc in recent_fcs %}
+                    <li class="admin-list-item">
+                        <div class="admin-list-info">
+                            <span class="admin-list-name">{{ fc.name }}</span>
+                            <span class="admin-list-date">{{ fc.created_at.strftime('%m/%d/%Y') }}</span>
+                        </div>
+                        <div class="admin-list-actions">
+                            <a href="{{ url_for('admin.fc_edit', fc_id=fc.id) }}" class="btn btn-xs btn-outline">
+                                Edit
+                            </a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="panel-empty">No FC created</p>
+                {% endif %}
+
+                <a href="{{ url_for('admin.fc_list') }}" class="panel-link">
+                    View all FCs →
+                </a>
+            </div>
+
+            <!-- Top FCs -->
+            <div class="admin-panel">
+                <h2 class="panel-title">
+                    <span class="title-icon">🏆</span>
+                    Top FCs
+                </h2>
+
+                {% if top_fcs %}
+                <ul class="admin-list">
+                    {% for fc, vote_count in top_fcs %}
+                    <li class="admin-list-item">
+                        <div class="admin-list-info">
+                            <span class="admin-list-name">
+                                {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{%
+                                endif %}
+                                {{ fc.name }}
+                            </span>
+                            <span class="admin-list-votes">{{ vote_count }} votes</span>
+                        </div>
+                        <div class="admin-list-actions">
+                            <a href="{{ url_for('public.fc_detail', fc_id=fc.id) }}" class="btn btn-xs btn-outline">
+                                View
+                            </a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="panel-empty">No votes</p>
+                {% endif %}
+
+                <a href="{{ url_for('public.leaderboard') }}" class="panel-link">
+                    View leaderboard →
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
