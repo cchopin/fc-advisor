@@ -1,0 +1,11 @@
+[Unit]
+Description=FC-Advisor pull-based auto-deploy
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=tely
+WorkingDirectory=/home/tely/fc-advisor
+ExecStart=/usr/bin/flock -n /tmp/fc-advisor-autodeploy.lock /home/tely/fc-advisor/deploy/autodeploy.sh
+TimeoutStartSec=15min
