@@ -74,10 +74,6 @@ class Vote(db.Model):
     vote_date = db.Column(db.Date, nullable=False, default=date.today)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Unique constraint: one vote per FC per tag per voter per day
-    __table_args__ = (
-        db.UniqueConstraint('fc_id', 'tag_id', 'voter_hash', 'vote_date', name='unique_vote_per_day'),
-    )
     
     def __repr__(self):
         return f'<Vote {self.tag_id} for FC {self.fc_id}>'
