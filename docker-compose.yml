@@ -7,5 +7,5 @@ services:
       - ./data:/app/instance # Persist database
     environment:
       - FLASK_ENV=production
-      - SECRET_KEY=***REMOVED***
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set in .env}
     restart: unless-stopped
