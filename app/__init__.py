@@ -49,12 +49,10 @@ def create_app():
     from app.routes.public import public_bp
     from app.routes.admin import admin_bp
     from app.routes.auth import auth_bp
-    from app.routes.webhook import webhook_bp
 
     app.register_blueprint(public_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(webhook_bp, url_prefix='/webhook')
     
     # Create database tables
     with app.app_context():

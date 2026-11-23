@@ -28,14 +28,5 @@ jobs:
         run: |
           python -c "from app import create_app; app = create_app(); print('App created successfully')"
 
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - name: Trigger deployment webhook
-        run: |
-          curl -X POST "${{ secrets.DEPLOY_WEBHOOK_URL }}" \
-            -H "X-Webhook-Secret: ${{ secrets.WEBHOOK_SECRET }}" \
-            --fail --silent --show-error
+# Deployment is pull-based: the server polls main and deploys commits whose
+# checks passed (see deploy/autodeploy.sh).
